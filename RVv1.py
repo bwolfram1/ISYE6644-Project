@@ -12,11 +12,11 @@ def triDist(lower = 0, upper = 1):
     U2 = np.random.uniform(lower,upper)
     return (U1+U2)/2
 def normDist(mean = 0, std = 1):
-    z1 = np.sqrt(-2*np.log(np.random.uniform(0,1)))*np.cos(2*np.pi*np.random.uniform(0,1))
-    z2 = np.sqrt(-2*np.log(np.random.uniform(0,1)))*np.sin(2*np.pi*np.random.uniform(0,1))
-    return z2
+    z1 = np.sqrt(-2*np.log(np.random.uniform(0,1)))*np.radians(np.cos(2*np.pi*np.random.uniform(0,1)))
+    z2 = np.sqrt(-2*np.log(np.random.uniform(0,1)))*np.radians(np.sin(2*np.pi*np.random.uniform(0,1)))
+    return z1
 
-def recreationalVehicle(dist, **kwargs):
+def recreationalVehicle(dist, kwargs):
     if dist == "triangular":
         return triDist(kwargs["lower"], kwargs["upper"])
     elif dist == "normal":
@@ -48,7 +48,7 @@ def recreationalVehicle(dist, **kwargs):
 
 
 
-def RVConvoy(n, dist, **kwargs):
+def RVConvoy(n, dist, kwargs):
     if dist == "uniform":
         xx = []
         x1 = []
@@ -62,7 +62,7 @@ def RVConvoy(n, dist, **kwargs):
     else:
         x = []
         for i in range(n):
-            x.append(recreationalVehicle(dist, **kwargs))
+            x.append(recreationalVehicle(dist, kwargs))
         return np.array(x)
 def indiecheck(values):
     b = list(np.arange(0,1,0.2))
@@ -85,30 +85,15 @@ def AReject(f, n, bounds = [0,1]):
     ymin = np.min(y)
     ymax = np.max(y)
     vals = []
+    
     for i in range(n):
-        u1 = np.random.uniform(bounds[0], bounds[1])
-        u2 = np.random.uniform(ymin,ymax)
-        #print(u1, u2)
-        if u2 <= f(u1):
-            vals.append(u1)
+        eq = False
+        while not eq:
+            u1 = np.random.uniform(bounds[0], bounds[1])
+            u2 = np.random.uniform(ymin,ymax)
+            #print(u1, u2)
+            if u2 <= f(u1):
+                vals.append(u1)
+                eq = True
     return vals
-
-
-x = RVConvoy(1, "uniform")
-#for i in range(10000):
-    #xx.append(stats.weibull_min.ppf(np.random.random(), scale=0.5, c=1.95))
-print(x)
-def fun(x):
-    return (x**2)*3
-
-x1 = np.linspace(0,1,1000)
-y1 = fun(x1)
-
-v = AReject(fun,10000)
-plt.plot(x1,y1)
-plt.hist(v,density=True)
-plt.show()
-#print(indiecheck(x))
-#plt.hist(x, bins=10)
-#plt.show()
 
